@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "View Cart";
+    List<Cart> cartItems = (List<Cart>)ViewData["cart"];
+    var userCartAmt = ViewData["userCartAmt"];
+
+}
+
+<head>
+    <script data-require="jquery@3.1.1" data-semver="3.1.1" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/css/viewcart.css" />
+    <script src="~/js/viewcart.js"></script>
+</head>
+
+<body id="cartBody">
+    @if (cartItems.Count == 0)
+    {
+<div class="cartEmptyDiv">
+    <h3 id="cartEmptyMessage" style="text-align:center; padding: 20px;">Your cart is empty!</h3>
+    <img id="cartEmptyMessage_Emoji" src="~/Image/EmptyCart.png" class="cart_CryingFaceEmoji" />
+</div> }
+            else
+            {
+<table id="cartTable">
+    <colgroup>
+        <col class="cart_Table_15" />
+        <col class="cart_Table_40" />
+        <col class="cart_Table_15" />
+        <col class="cart_Table_20" />
+        <col class="cart_Table_10" />
+    </colgroup>
+
+    <tr>
+        <th>Item</th>
+        <th>Details</th>
+        <th>Quantity</th>
+        <th>Subtotal</th>
+        <th>Remove from Cart</th>
+    </tr>
+
+    @foreach (var cartitem in cartItems)
+    {
+        var placeholder = "subtotal" + @cartitem.Product.ProductId;
+        var placeholder2 = "unitprice" + @cartitem.Product.ProductId;
+        var placeholder3 = "cartitem" + @cartitem.Product.ProductId;
+        var placeholder4 = @cartitem.Product.ProductId;
+        var rawSubtotal = @cartitem.Product.UnitPrice * @cartitem.Quantity;
+        var initSubtotal = Math.Round(rawSubtotal, 2).ToString("#,0.00");
+
+<tr id=@placeholder3 class="itemRow">
+    <td>
+        <img class="card-img-top mx-auto" style="width: 150px;height: 150px; margin: 1rem" src="/Image/@cartitem.Product.IconURL" alt="Product Image TBF">
+    </td>
+    <td>
+        <b>@cartitem.Product.ProductName</b><br>
+        @cartitem.Product.ProductDescription.<br><br />
+        <span id=@placeholder2 class="unitprice">$@cartitem.Product.UnitPrice.ToString("0.00")</span>
+    </td>
+    <td>
+        <div>
+            @*below buttons are for testing purposes; For reference: Actual buttons/links need <... onclick="Add/Subtract(@products.ProductId);" class="add_btn"/"subtract_btn" ...></> to work*@
+            <a id="cartEmptyMessage" style="text-align:center; padding: 20px;"> @cartitem.Quantity</a>
+            <p></p>
+            <a onclick="AddInCart(@cartitem.Product.ProductId);" class="add_btn"><i id="@cartitem.Product.ProductId" class="fas fa-shopping-cart text-primary mr-1"></i>+</a>
+            <a onclick="RemoveInCart(@cartitem.Product.ProductId);" class="subtract_btn"><i id="@cartitem.Product.ProductId" class="fas fa-shopping-cart text-primary mr-1"></i>-</a>
+        </div>
+    </td>
+    <td id=@placeholder class="subtotals">
+        $@initSubtotal
+    </td>
+    <td>
+        @*This is the button that activates the remove-item-from-cart js. Required is: <id="@cartitem.Product.ProductId" class="cartItem"><>*@
+        <a id="@cartitem.Product.Id" class="cartItem"><img style="width: 50px; height: 50px " id="@cartitem.Product.ProductId" src="/Image/RemoveFromCartIcon.png" class="cart_RemoveIcon"></a>
+    </td>
+</tr>}
+
+</table>
+
+                <hr id="lineDivider" />
+
+                                <div id="totalPriceBottom" style="text-align:right; font-size:22px; font-weight:bold;">Total: $@userCartAmt</div>
+                                                <input type="submit" value="Checkout &#x2192" class="cart_CheckoutButton" id="checkoutButton" onclick="@("window.location.href='" + @Url.Action("CheckOut", "Cart") + "'");">}
+</body>
